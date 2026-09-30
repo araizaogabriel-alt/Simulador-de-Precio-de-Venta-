@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulador de Precio de Venta (PV)</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; }
+        .card { max-width: 600px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        .slider-group { margin-bottom: 18px; }
+        .slider-group label { display: flex; justify-content: space-between; font-weight: 600; color: #34495e; margin-bottom: 5px; }
+        input[type=range] { width: 100%; cursor: pointer; }
+        .results { background: #eef8f6; border-left: 5px solid #16a085; padding: 15px; margin-top: 25px; border-radius: 6px; }
+        .results h3 { margin-top: 0; color: #16a085; }
+        .price-tag { font-size: 1.4em; font-weight: bold; color: #27ae60; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Simulador de Precio de Venta (PV)</h2>
+    
+    <div class="slider-group">
+        <label>Horas Máquina (Hm): <span id="val_hm">5</span> hrs</label>
+        <input type="range" id="hm" min="1" max="20" value="5" step="0.5" oninput="calcular()">
+    </div>
+
+    <div class="slider-group">
+        <label>Costo por Hora (Hc): $<span id="val_hc">50</span> USD</label>
+        <input type="range" id="hc" min="10" max="200" value="50" step="5" oninput="calcular()">
+    </div>
+
+    <div class="slider-group">
+        <label>Materia Prima Unitario (MP): $<span id="val_mp">20</span> USD</label>
+        <input type="range" id="mp" min="5" max="200" value="20" step="1" oninput="calcular()">
+    </div>
+
+    <div class="slider-group">
+        <label>Tratamiento Térmico Lote (T total): $<span id="val_t">150</span> USD</label>
+        <input type="range" id="t" min="0" max="500" value="150" step="10" oninput="calcular()">
+    </div>
+
+    <div class="slider-group">
+        <label>Costo Envío Lote (S total): $<span id="val_s">60</span> USD</label>
+        <input type="range" id="s" min="0" max="300" value="60" step="5" oninput="calcular()">
+    </div>
+
+    <div class="slider-group">
+        <label>Tamaño del Lote: <span id="val_pzas">15</span> pzas</label>
+        <input type="range" id="pzas" min="1" max="100" value="15" step="1" oninput="calcular()">
+    </div>
+
+    <div class="slider-group">
+        <label>Margen de Utilidad (MU%): <span id="val_mu">25</span>%</label>
+        <input type="range" id="mu" min="5" max="100" value="25" step="1" oninput="calcular()">
+    </div>
+
+    <div class="results">
+        <h3>Desglose de Cotización</h3>
+        <p>Mano de Obra (MO): <b>$<span id="res_mo">0</span> USD</b></p>
+        <p>Tratamiento Térmico Unitario: <b>$<span id="res_tu">0</span> USD</b></p>
+        <p>Envío Unitario (S): <b>$<span id="res_su">0</span> USD</b></p>
+        <hr>
+        <p class="price-tag">PV Unitario: $<span id="res_pv">0</span> USD</p>
+        <p class="price-tag">PV Total Lote: $<span id="res_pv_total">0</span> USD</p>
+    </div>
+</div>
+
+<script>
+function calcular() {
+    let hm = parseFloat(document.getElementById('hm').value);
+    let hc = parseFloat(document.getElementById('hc').value);
+    let mp = parseFloat(document.getElementById('mp').value);
+    let t = parseFloat(document.getElementById('t').value);
+    let s = parseFloat(document.getElementById('s').value);
+    let pzas = parseInt(document.getElementById('pzas').value);
+    let mu = parseFloat(document.getElementById('mu').value) / 100;
+
+    // Actualizar etiquetas
+    document.getElementById('val_hm').innerText = hm;
+    document.getElementById('val_hc').innerText = hc;
+    document.getElementById('val_mp').innerText = mp;
+    document.getElementById('val_t').innerText = t;
+    document.getElementById('val_s').innerText = s;
+    document.getElementById('val_pzas').innerText = pzas;
+    document.getElementById('val_mu').innerText = Math.round(mu * 100);
+
+    // Fórmulas oficiales: MO = Hm * Hc | PV = (MO + MP + T)(1 + MU%) + S
+    let mo = hm * hc;
+    let t_u = t / pzas;
+    let s_u = s / pzas;
+
+    let pv_u = (mo + mp + t_u) * (1 + mu) + s_u;
+    let pv_total = pv_u * pzas;
+
+    // Mostrar resultados
+    document.getElementById('res_mo').innerText = mo.toFixed(2);
+    document.getElementById('res_tu').innerText = t_u.toFixed(2);
+    document.getElementById('res_su').innerText = s_u.toFixed(2);
+    document.getElementById('res_pv').innerText = pv_u.toFixed(2);
+    document.getElementById('res_pv_total').innerText = pv_total.toFixed(2);
+}
+
+calcular();
+</script>
+
+</body>
+</html>
